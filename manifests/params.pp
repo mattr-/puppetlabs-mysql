@@ -145,9 +145,27 @@ class mysql::params {
           $ssl_cert              = '/etc/mysql/server-cert.pem'
           $ssl_key               = '/etc/mysql/server-key.pem'
         }
-
+        'Archlinux': {
+          $basedir               = '/usr'
+          $datadir               = '/var/lib/mysql'
+          $service_name          = 'mysqld'
+          $client_package_name   = 'mysql-clients'
+          $server_package_name   = 'mysql'
+          $socket                = '/run/mysqld/mysqld.sock'
+          $config_file           = '/etc/mysql/my.cnf'
+          $log_error             = ''
+          $ruby_package_name     = 'mysql2'
+          $ruby_package_provider = 'gem'
+          $python_package_name   = 'mysql-python'
+          $php_package_name      = ''
+          $java_package_name     = 'mysql-connector-java'
+          $root_group            = 'root'
+          $ssl_ca                = '/etc/mysql/cacert.pem'
+          $ssl_cert              = '/etc/mysql/server-cert.pem'
+          $ssl_key               = '/etc/mysql/server-key.pem'
+        }
         default: {
-          fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, module ${module_name} only support osfamily RedHat, Debian, and FreeBSD, or operatingsystem Amazon")
+          fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, module ${module_name} only support osfamily RedHat, Debian, and FreeBSD, and operatingsystem Amazon or Archlinux")
         }
       }
     }

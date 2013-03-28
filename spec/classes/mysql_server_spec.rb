@@ -95,4 +95,66 @@ describe 'mysql::server' do
       end
     end
   end
+
+  describe 'with operatingsystem specific defaults' do
+    {
+      'Archlinux' => {
+        :service_name => 'mysqld',
+        :package_name => 'mysql'
+      }
+    }.each do |os, osparams|
+      describe "when operatingsystem is #{os}" do
+
+        let :facts do
+          { :operatingsystem => os }
+        end
+
+        [
+          {},
+          {
+            :package_name   => 'dans_package',
+            :package_ensure => 'latest',
+            :service_name   => 'dans_service',
+            :config_hash    => {'root_password' => 'foo'},
+            :enabled        => false,
+            :manage_service => false
+          }
+        ].each do |passed_params|
+
+          describe "with #{passed_params == {} ? 'default' : 'specified'} parameters" do
+
+            let :parameter_defaults do
+              constant_parameter_defaults.merge(osparams)
+            end
+
+            let :params do
+              passed_params
+            end
+
+            let :param_values do
+              parameter_defaults.merge(params)
+            end
+
+            it { should contain_package('mysql-server').with(
+              :name   => param_values[:package_name],
+              :ensure => param_values[:package_ensure]
+            )}
+
+            it {
+              if param_values[:manage_service]
+                should contain_service('mysqld').with(
+                  :name    => param_values[:service_name],
+                  :ensure  => param_values[:enabled] ? 'running' : 'stopped',
+                  :enable  => param_values[:enabled],
+                  :require => 'Package[mysql-server]'
+                ).without_provider
+              else
+                should_not contain_service('mysqld')
+              end
+            }
+          end
+        end
+      end
+    end
+  end
 end

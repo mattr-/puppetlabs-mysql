@@ -41,6 +41,29 @@ describe 'mysql' do
     end
   end
 
+  describe 'on an Archlinux os' do
+    let :facts do
+      {:osfamily        => 'Linux',
+       :operatingsystem => 'Archlinux'}
+    end
+
+    it { should contain_package('mysql_client').with(
+      :name => 'mysql-clients',
+      :ensure => 'present'
+    )}
+
+    describe 'when parameters are supplied' do
+      let :params do
+        {:package_ensure => 'latest', :package_name => 'mysql_client'}
+      end
+
+      it { should contain_package('mysql_client').with(
+        :name => 'mysql_client',
+        :ensure => 'latest'
+      )}
+    end
+  end
+
   describe 'on any other os' do
     let :facts do
       {:osfamily => 'foo'}
